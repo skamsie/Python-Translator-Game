@@ -1,0 +1,48 @@
+cat:Katze
+dog:Hund
+exercise:Übung
+to solve:lösen
+door:Tür
+cheese:Käse
+food:Essen
+glue:Kleber
+to sleep:schlafen
+fish:Fisch
+to die:sterben
+to laugh:lachen
+happy:glücklich
+house:Haus
+bed:Bett
+cake:Kuchen
+to suck:lutschen
+to lick:lecken
+to go:gehen
+to search:suchen
+to wait:warten
+table:Tisch
+chair:Stuhl
+comb:Kamm
+spoon:Löffel
+cold:kalt
+warm:warm
+insurance:Versicherung
+trousers:Hosen
+soup:Suppe
+name:Name
+flower:Blume
+apple:Apfel
+to run:laufen
+dictionary:Wörterbuch
+surveillance camera:Überwachungskamera
+sour:sauer
+speed:Geschwindigkeit
+cigarettes:Zigaretten
+pumpkin:Kürbis
+thirst:Durst
+toilet:Toilette
+juice:Saft
+computer:Computer
+to cut:schneiden
+window:Fenster
+child:Kind
+ball:Ball
