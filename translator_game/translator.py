@@ -110,7 +110,9 @@ class TranslatorGame():
         self.score += 3
         print '\nOK\n'
       else:
-        print '%s...' % value[0:2]
+        hint = '%s...' %(value [0:4] if value.startswith('to ')
+                         else value [0:2])
+        print hint
         answer_2 = raw_input()
         if answer_2.decode('utf-8') == value:
           self.score += 1
