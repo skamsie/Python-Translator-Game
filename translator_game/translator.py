@@ -2,30 +2,50 @@
 
 For adding more entries update the 'translator_game/dictionary.txt' file 
 using the pattern 'en_word:de_word'.
+
+The translator game also uses a high-score system. A file 'high_scores.cfg'
+will be created after the first play in the game directory. From then on it will
+store the best score and time for each type of game and number of rounds.
+Deleting the high_scores file resets the statistics.
+
+Usage:
+
+  - run this module without arguments --> play translator game
+  - run with '--print_dict' --> prints the contents of 'dictionary.txt'
+    sorted by English words
+  - run with '--sort_dict' --> sorts the 'dictionary.txt' in place
+  - run with '-h' --> shows standard help message
 """
 
 
 import os
 import codecs
 import random
+import argparse
 import ConfigParser
 import datetime
 import sys
 import ast
 
 
+DIR_PATH = os.path.abspath(os.path.dirname(__file__))
+DICT_FILE = os.path.join(DIR_PATH, 'dictionary.txt')
 HS_FILE = 'high_scores.cfg'
-DICT_FILE = 'dictionary.txt'
 EN_DE = 'EN_DE'
 DE_EN = 'DE_EN'
+PARSER = argparse.ArgumentParser()
+PARSER.add_argument('--sort_dict', help='sorts dictionary', action='store_true')
+PARSER.add_argument('--print_dict', help='prints sorted dictionary',
+                    action='store_true')
+ARGS = PARSER.parse_args()
 
 
-class TranslatorGame():
+class TranslatorGame(object):
   
   def __init__(self):
-    self.path_to_dir = os.path.abspath(os.path.dirname(__file__))
+    self.path_to_dir = DIR_PATH
+    self.dict_file = DICT_FILE
     self.score_file = os.path.join(self.path_to_dir, HS_FILE)
-    self.dict_file = os.path.join(self.path_to_dir, DICT_FILE)
     self.score_parser = ConfigParser.RawConfigParser()
     self.game_type = None
     self.rounds = None
@@ -145,7 +165,7 @@ class TranslatorGame():
     """Sets high score.
     
     Evaluates high-score file statistics and compares with current score and
-    time. If the new values are better sets self.best_time and self.best_score
+    time. If the new values are better, sets self.best_time and self.best_score
     and overrites them in the score file.
     
     Returns:
@@ -198,6 +218,64 @@ class TranslatorGame():
     self.RunGame()
     self.PrintGameStatistics()
 
-if __name__=="__main__":
-  game_player = TranslatorGame()
-  game_player.Play()
+class Utils(object):
+  """Utilities for this module."""
+
+  def __init__(self, dict_file):
+    self.dict_file = dict_file
+  
+  def _SortDictItems(self):
+    """Returns a list with items sorted by English word from self.dict_file."""
+
+    words = {}
+    with codecs.open(self.dict_file, 'r', 'utf-8') as my_file:
+      for line in my_file:
+        if line.strip():
+          key, value = line.strip().split(':')
+          words[key] = value
+    sorted_items = [[k, words.get(k)] for k in sorted(words.keys(),
+                    key=lambda x: x.lower()[3:] if x.startswith('to ')
+                    else x.lower())]
+    return sorted_items
+
+  def SortDictFile(self):
+    """Sorts dictionary by key (english word).
+    
+    Words are sorted alphabetically and strings starting with uppercase have no
+    special status. English verbs are stripped of 'to ' before being sorted.
+    The dictionary is replaced in the same file 'self.dict_file'.
+    """
+
+    sorted_items = self._SortDictItems()
+    with open(self.dict_file, 'w+') as new_file:
+      for key_item, value_item in sorted_items:
+        if not key_item.startswith('to '):
+          key_item = '   %s' %key_item
+        new_file.write('%s:%s\n' % (key_item.encode('utf-8'),
+                                    value_item.encode('utf-8')))
+    print '%s file was sorted' % self.dict_file
+
+  def PrintSortedDict(self):
+    """Prints sorted dictionary."""
+
+    sorted_items = self._SortDictItems()
+    for key_item, value_item in sorted_items:
+      if not key_item.startswith('to '):
+        key_item = '   %s' %key_item
+      print '%s:%s' %(key_item, value_item)
+    print '** The dictionary contains %s entries **' % len(sorted_items)
+
+
+def main():
+
+  translator = TranslatorGame()
+  utils = Utils(DICT_FILE)
+  if ARGS.print_dict:
+    utils.PrintSortedDict()
+  elif ARGS.sort_dict:
+    utils.SortDictFile()
+  else:
+    translator.Play()
+
+if __name__ == '__main__':
+  main()
